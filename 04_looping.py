@@ -25,5 +25,7 @@ while tickets_sold < MAX_TICKETS:
 
     tickets_sold += 1
 
-if tickets_sold < MAX_TICKETS:
-    print("")
+if tickets_sold == MAX_TICKETS:
+    print(f"You Have sold all {MAX_TICKETS} tickets")
+else:
+    print(f"You have sold {tickets_sold} / {MAX_TICKETS} tickets")
