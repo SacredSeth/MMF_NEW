@@ -111,6 +111,11 @@ def string_check(question, ans_list=None, num_letters=1):
         print(f"Please choose an option from {error}\n")
 
 
+def currency(x):
+    """Formats numbers as currency ($x.xx)"""
+    return f"${x:.2f}"
+
+
 # Main
 
 # initialize variables / non-default options for string checker
@@ -127,6 +132,13 @@ SENIOR_PRICE = 6.50
 # Credit surcharge
 CREDIT_SURCHARGE = 0.05
 
+# create dict
+mini_movie_dict = {
+    'Name': name_list,
+    'Ticket Price': ticket_cost_list,
+    'Surcharge': surcharge_list
+}
+
 # loop for testing
 for _ in range(5):
     print()
@@ -142,11 +154,11 @@ for _ in range(5):
     if age < 12:
         print(f"{name} is too young")
         continue
-    elif 12 <= age < 16:
+    elif age < 16:
         ticket_price = CHILD_PRICE
-    elif 16 <= age < 65:
+    elif age < 65:
         ticket_price = ADULT_PRICE
-    elif 65 <= age < 120:
+    elif age < 120:
         ticket_price = SENIOR_PRICE
     else:
         print(f"{name} is too old")
@@ -168,16 +180,9 @@ for _ in range(5):
     surcharge_list.append(surcharge)
     ticket_total = ticket_price + surcharge
 
-    print(f"{name}'s ticket cost ${ticket_price:.2f}, they paid by {pay_method} "
-          f"so the surcharge is ${surcharge:.2f}\n"
-          f"The total cost comes to ${ticket_total:.2f}\n")
-
-# create dict
-mini_movie_dict = {
-    'Name': name_list,
-    'Ticket Price': ticket_cost_list,
-    'Surcharge': surcharge_list
-}
+    # print(f"{name}'s ticket cost ${ticket_price:.2f}, they paid by {pay_method} "
+    #       f"so the surcharge is ${surcharge:.2f}\n"
+    #       f"The total cost comes to ${ticket_total:.2f}\n")
 
 # Create data frame
 mini_movie_frame = pandas.DataFrame(mini_movie_dict)
@@ -190,9 +195,14 @@ mini_movie_frame['Profit'] = mini_movie_frame['Total'] - 5
 grand_total = mini_movie_frame['Total'].sum()
 profit_total = mini_movie_frame['Profit'].sum()
 
+# currency formatting
+add_dollars = ['Ticket Price', 'Surcharge', 'Total', 'Profit']
+for var in add_dollars:
+    mini_movie_frame[var] = mini_movie_frame[var].apply(currency)
+
 # print the dataframe
 print()
-print(mini_movie_frame)
+print(mini_movie_frame.to_string(index=False))
 print()
 print(f"Total Paid: ${grand_total:.2f}")
 print(f"Total Profit: ${profit_total:.2f}")

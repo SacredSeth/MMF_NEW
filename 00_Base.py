@@ -1,3 +1,7 @@
+# Imports
+import pandas
+
+
 # Functions
 def num_check(question, datatype=int, low=0, high=None, exit_code="xxx"):
     """ Function to make sure user inputs an integer / float that is within parameters """
@@ -152,6 +156,11 @@ draw (their ticket is free).
     ''')
 
 
+def currency(x):
+    """Formats numbers as currency ($x.xx)"""
+    return f"${x:.2f}"
+
+
 # Main
 
 # initialize variables / non-default options for string checker
@@ -159,20 +168,36 @@ payment_list = ['cash', 'credit']
 MAX_TICKETS = 5
 tickets_sold = 0
 
+ticket_cost_list = []
+surcharge_list = []
+name_list = []
+
+# tickets Price List
+CHILD_PRICE = 7.50
+ADULT_PRICE = 10.50
+SENIOR_PRICE = 6.50
+
+# Credit surcharge
+CREDIT_SURCHARGE = 0.05
+
+# print heading
 make_statement("Mini-Movie Fundraiser", "*", 3)
 
+# ask user if they want to see the instructions
 print()
 want_instructions = string_check("Do you want to see instructions? ")
 
+# display if yes
 if want_instructions == "yes":
     instructions()
 
-# loop for testing
+# loop to sell as many tickets as possible
 while tickets_sold < MAX_TICKETS:
     print()
 
     # check name isn't blank
     name = not_blank("Name: ")
+    name_list.append(name)
 
     # check for exit code
     if name == "xxx":
@@ -185,26 +210,71 @@ while tickets_sold < MAX_TICKETS:
     if age == "exit":
         break
 
-    # error / success messages
+    # error / Pricing based on age
     if age < 12:
         print(f"{name} is too young")
         continue
-    elif age > 120:
+    elif age < 16:
+        ticket_price = CHILD_PRICE
+    elif age < 65:
+        ticket_price = ADULT_PRICE
+    elif age < 120:
+        ticket_price = SENIOR_PRICE
+    else:
         print(f"{name} is too old")
         continue
-    else:
-        pass
+
+    # append to a list
+    ticket_cost_list.append(ticket_price)
 
     # ask for payment method
     pay_method = string_check("Payment method: ", payment_list, 2)
-    print(f"{name} has bought a ticket ({pay_method})")
+
+    # get surcharge amount
+    if pay_method == "cash":
+        surcharge = 0
+    else:
+        surcharge = ticket_price * CREDIT_SURCHARGE
+
+    # append surcharge to list and get total cost
+    surcharge_list.append(surcharge)
+    ticket_total = ticket_price + surcharge
 
     tickets_sold += 1
 
 # end of selling loop
 
-print()
+# create dict
+mini_movie_dict = {
+    'Name': name_list,
+    'Ticket Price': ticket_cost_list,
+    'Surcharge': surcharge_list
+}
 
+# Create data frame
+mini_movie_frame = pandas.DataFrame(mini_movie_dict)
+
+# calculate total / profit
+mini_movie_frame['Total'] = mini_movie_frame['Ticket Price'] + mini_movie_frame['Surcharge']
+mini_movie_frame['Profit'] = mini_movie_frame['Total'] - 5
+
+# get grand totals
+grand_total = mini_movie_frame['Total'].sum()
+profit_total = mini_movie_frame['Profit'].sum()
+
+# currency formatting
+add_dollars = ['Ticket Price', 'Surcharge', 'Total', 'Profit']
+for var in add_dollars:
+    mini_movie_frame[var] = mini_movie_frame[var].apply(currency)
+
+# print the dataframe
+print()
+print(mini_movie_frame.to_string(index=False))
+print()
+print(f"Total Paid: ${grand_total:.2f}")
+print(f"Total Profit: ${profit_total:.2f}")
+
+print()
 # check for amount of sold tickets
 if tickets_sold == MAX_TICKETS:
     print(f"You have sold all {MAX_TICKETS} tickets")
