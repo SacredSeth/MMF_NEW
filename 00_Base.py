@@ -256,7 +256,7 @@ mini_movie_frame = pandas.DataFrame(mini_movie_dict)
 
 # calculate total / profit
 mini_movie_frame['Total'] = mini_movie_frame['Ticket Price'] + mini_movie_frame['Surcharge']
-mini_movie_frame['Profit'] = mini_movie_frame['Total'] - 5
+mini_movie_frame['Profit'] = mini_movie_frame['Ticket Price'] - 5
 
 # get grand totals
 grand_total = mini_movie_frame['Total'].sum()
