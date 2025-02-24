@@ -1,5 +1,6 @@
 # Imports
 import pandas
+import random
 
 
 # Functions
@@ -197,11 +198,11 @@ while tickets_sold < MAX_TICKETS:
 
     # check name isn't blank
     name = not_blank("Name: ")
-    name_list.append(name)
 
     # check for exit code
     if name == "xxx":
         break
+    name_list.append(name)
 
     # check age is between 12 and 120
     age = num_check("Age: ")
@@ -262,6 +263,26 @@ mini_movie_frame['Profit'] = mini_movie_frame['Ticket Price'] - 5
 grand_total = mini_movie_frame['Total'].sum()
 profit_total = mini_movie_frame['Profit'].sum()
 
+print()
+print(f"Total Paid: ${grand_total:.2f}")
+print(f"Total Profit: ${profit_total:.2f}")
+
+# choose a random winner
+winner = random.choice(name_list)
+
+# find index of winner
+winner_index = name_list.index(winner)
+
+# retrieve ticket price and surcharge
+ticket_won = mini_movie_frame.at[winner_index, 'Total']
+profit_won = mini_movie_frame.at[winner_index, 'Profit']
+
+# announce winner
+print(f"\nThe lucky winner is {winner}. Their ticket worth {ticket_won} is free!")
+print(f"The grand total is now ${(grand_total - ticket_won):.2f}")
+print(f"The total profit is now ${(profit_total - profit_won):.2f}")
+
+
 # currency formatting
 add_dollars = ['Ticket Price', 'Surcharge', 'Total', 'Profit']
 for var in add_dollars:
@@ -270,9 +291,6 @@ for var in add_dollars:
 # print the dataframe
 print()
 print(mini_movie_frame.to_string(index=False))
-print()
-print(f"Total Paid: ${grand_total:.2f}")
-print(f"Total Profit: ${profit_total:.2f}")
 
 print()
 # check for amount of sold tickets
