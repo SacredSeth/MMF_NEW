@@ -122,20 +122,17 @@ def make_statement(statement, decoration="", lines=1):
 
     # prints statement with decorations over a certain number of lines
     if lines == 1:
-        print(middle)
+        return middle
     elif lines == 2:
-        print(middle)
-        print(top_bottom)
+        return middle + "\n" + top_bottom
     else:
-        print(top_bottom)
-        print(middle)
-        print(top_bottom)
+        return top_bottom + "\n" + middle + "\n" + top_bottom
 
 
 def instructions():
     """Print the instructions with a header"""
 
-    make_statement("Instructions", "ℹ️")
+    print(make_statement("Instructions", "ℹ️"))
 
     print('''
 
@@ -182,7 +179,7 @@ SENIOR_PRICE = 6.50
 CREDIT_SURCHARGE = 0.05
 
 # print heading
-make_statement("Mini-Movie Fundraiser", "*", 3)
+print(make_statement("Mini-Movie Fundraiser", "*", 3))
 
 # ask user if they want to see the instructions
 print()
@@ -264,8 +261,8 @@ grand_total = mini_movie_frame['Total'].sum()
 profit_total = mini_movie_frame['Profit'].sum()
 
 print()
-print(f"Total Paid: ${grand_total:.2f}")
-print(f"Total Profit: ${profit_total:.2f}")
+grand_total_string = f"Total Paid: ${grand_total:.2f}"
+total_profit_string = f"Total Profit: ${profit_total:.2f}"
 
 # choose a random winner
 winner = random.choice(name_list)
@@ -277,10 +274,9 @@ winner_index = name_list.index(winner)
 ticket_won = mini_movie_frame.at[winner_index, 'Total']
 profit_won = mini_movie_frame.at[winner_index, 'Profit']
 
-# announce winner
-print(f"\nThe lucky winner is {winner}. Their ticket worth {ticket_won} is free!")
-print(f"The grand total is now ${(grand_total - ticket_won):.2f}")
-print(f"The total profit is now ${(profit_total - profit_won):.2f}")
+lucky_winner_string = f"\nThe lucky winner is {winner}. Their ticket worth ${ticket_won:.2f} is free!"
+final_total_string = f"The grand total is now ${(grand_total - ticket_won):.2f}"
+final_profit_string = f"The total profit is now ${(profit_total - profit_won):.2f}"
 
 
 # currency formatting
@@ -290,11 +286,49 @@ for var in add_dollars:
 
 # print the dataframe
 print()
-print(mini_movie_frame.to_string(index=False))
+mini_movie_string = mini_movie_frame.to_string(index=False)
 
 print()
 # check for amount of sold tickets
 if tickets_sold == MAX_TICKETS:
-    print(f"You have sold all {MAX_TICKETS} tickets")
+    num_sold_string = make_statement(f"You have sold all {MAX_TICKETS} tickets", "-")
 else:
-    print(f"You have sold {tickets_sold} / {MAX_TICKETS} tickets")
+    num_sold_string = make_statement(f"You have sold {tickets_sold} / {MAX_TICKETS} tickets", "-")
+
+# additional string / headings
+heading_string = make_statement("mini Movie Fundraiser", "=")
+ticket_details_heading = make_statement("Ticket Details", "-")
+raffle_heading = make_statement("Raffle Winner", "-")
+adjusted_sales_heading = make_statement("Adjusted Sales & Profit", "-")
+adjusted_explanation = f"We have given away a ticket worth ${ticket_won:.2f} which means \nour" \
+                       f"sales have decreased by ${ticket_won:.2f} and our profit \n" \
+                       f"decreased by ${profit_won:.2f}"
+
+# list of strings to be outputted / written to file
+to_write = [heading_string, "\n",
+            ticket_details_heading,
+            mini_movie_string, "\n",
+            grand_total_string,
+            total_profit_string, "\n",
+            raffle_heading,
+            lucky_winner_string, "\n",
+            adjusted_sales_heading,
+            adjusted_explanation, "\n",
+            final_total_string,
+            final_profit_string, "\n",
+            num_sold_string]
+
+# Print area
+for item in to_write:
+    print(item)
+
+# create file to hold data
+file_name = "MMF_ticket_details"
+write_to = f"{file_name}.txt"
+
+text_file = open(write_to, "w+")
+
+# write the item to file
+for item in to_write:
+    text_file.write(item)
+    text_file.write("\n")
